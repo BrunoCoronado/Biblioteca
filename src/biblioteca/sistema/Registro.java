@@ -120,7 +120,7 @@ public class Registro {
         public void actionPerformed(ActionEvent ae) {
             try {
                 for (int i = 0; i < 10; i++) {
-                    if(Sistema.usuarios[i].getNombre().equals(usuario.getText())){
+                    if(Sistema.usuarios[i].getUsuario().equals(usuario.getText())){
                         JOptionPane.showMessageDialog(null, "Usuario no registrado! Nombre de usuario no disponible.");
                         reiniciarTexto();
                         break;

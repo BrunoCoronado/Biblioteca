@@ -6,6 +6,8 @@
 package biblioteca.sistema;
 
 import biblioteca.bean.Libro;
+import biblioteca.bean.Revista;
+import biblioteca.bean.Tesis;
 import java.awt.GridLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -26,8 +28,7 @@ public class VerMaterial {
     
     public void mostrarMaterial(int idMaterial, String tipo){
         ventana = new JFrame();
-        ventana.setSize(300, 300);
-        ventana.setLayout(new GridLayout(1, 10));
+        ventana.setLayout(new GridLayout(10, 1));
         
         switch(tipo){
             case "Libros":
@@ -36,16 +37,17 @@ public class VerMaterial {
                 break;
             case "Revistas":
                 //agregar contenido revista
+                mostrarRevistas(idMaterial);
                 break;
             case "Tesis":
                 //agregar contenido tesis
+                mostrarTesis(idMaterial);
                 break;
         }
         ventana.pack();
         ventana.setVisible(true);
         ventana.setResizable(false);
-        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        ventana.setFocusableWindowState(true);
+        ventana.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
     
     private void mostrarLibros(int idMaterial){
@@ -66,7 +68,40 @@ public class VerMaterial {
         ventana.add(lblCampo6);
     }
     
-    private void mostrarRevistas(int idMaterial){}
+    private void mostrarRevistas(int idMaterial){
+        Revista revista = Sistema.revistas[idMaterial];
+        
+        lblCampo1 = new JLabel("ID: "+ revista.getId());
+        lblCampo2 = new JLabel("Título: "+ revista.getTitulo());
+        lblCampo3 = new JLabel("Compañia: "+ revista.getCompañia());
+        lblCampo4 = new JLabel("Fecha: "+ revista.getFecha());
+        lblCampo5 = new JLabel("Tema: "+ revista.getTema());
+        lblCampo6 = new JLabel("Estado: "+ revista.getEstado());
+        
+        ventana.add(lblCampo1);
+        ventana.add(lblCampo2);
+        ventana.add(lblCampo3);
+        ventana.add(lblCampo4);
+        ventana.add(lblCampo5);
+        ventana.add(lblCampo6);
+    }
     
-    private void mostrarTesis(int idMaterial){}
+    private void mostrarTesis(int idMaterial){
+        Tesis tesis = Sistema.tesis[idMaterial];
+        
+        lblCampo1 = new JLabel("ID: "+ tesis.getId());
+        lblCampo2 = new JLabel("Título: "+ tesis.getTitulo());
+        lblCampo3 = new JLabel("Autor: "+ tesis.getAutor());
+        lblCampo4 = new JLabel("Grado: "+ tesis.getGrado());
+        lblCampo5 = new JLabel("Tema: "+ tesis.getTema());
+        lblCampo6 = new JLabel("Año: "+ tesis.getAño());
+        lblCampo6 = new JLabel("Estado: "+ tesis.getEstado());
+        
+        ventana.add(lblCampo1);
+        ventana.add(lblCampo2);
+        ventana.add(lblCampo3);
+        ventana.add(lblCampo4);
+        ventana.add(lblCampo5);
+        ventana.add(lblCampo6);
+    }
 }

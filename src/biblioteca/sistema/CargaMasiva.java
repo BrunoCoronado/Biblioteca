@@ -14,7 +14,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 /**
@@ -27,6 +29,8 @@ public class CargaMasiva {
     private JButton cancelar;
     private JButton cargar;
     private JButton btnCerrarSesion;
+    private boolean limiteLibros,limiteRevistas,limiteTesis, limiteUsuarios, nombreDeUsuarioNoDisponible;
+    private String mensaje = "Limite Alcanzado de: ";
     
     public CargaMasiva() {
         lblTitulo = new JLabel("Carga Masiva");
@@ -52,8 +56,9 @@ public class CargaMasiva {
         btnCerrarSesion.addActionListener(new CerrarSesion());
         panelHeader.add(btnCerrarSesion, BorderLayout.EAST);
         
+        JScrollPane scrollPane = new JScrollPane(taContenido);
         panelCargaMasiva.add(panelHeader, BorderLayout.NORTH);
-        panelCargaMasiva.add(taContenido, BorderLayout.CENTER);
+        panelCargaMasiva.add(scrollPane, BorderLayout.CENTER);
         panelCargaMasiva.add(panelBotones, BorderLayout.SOUTH);
         
         Sistema.panel.add(panelCargaMasiva, "panelCargaMasiva");
@@ -72,38 +77,107 @@ public class CargaMasiva {
 
         private void separarContenido(String texto) {
             try {
-                texto = texto.replace("\n", "");
-                String[] contenido = texto.split("\\|");
+                String[] contenido = texto.split("\n");
                 for (int i = 0; i < contenido.length; i++) {
-                    String[] ejemplar = contenido[i].split(";");
-                    
+                    String[] ejemplar = contenido[i].split("\\|");
                     switch(ejemplar[0]){
                         case "0":
-                            Sistema.libros[Sistema.contadorLibros] = new Libro(ejemplar[2], Integer.parseInt(ejemplar[4]),(Sistema.contadorLibros-Sistema.contadorLibrosEliminados), "LIB-"+(Sistema.contadorLibros+1), ejemplar[1], ejemplar[3], 0);
-                            Sistema.contadorLibros++;// = Sistema.contadorLibros++;
+                            if (Sistema.contadorLibros<=49) {
+                                Sistema.libros[Sistema.contadorLibros] = new Libro(ejemplar[2], Integer.parseInt(ejemplar[4]),(Sistema.contadorLibros-Sistema.contadorLibrosEliminados), "LIB-"+(Sistema.contadorLibros+1), ejemplar[1], ejemplar[3], 0);
+                                Sistema.contadorLibros++;
+                                
+                            }else{
+                                if (limiteLibros==false) {
+                                    errorLimiteAlmacenamieto(0);
+                                    limiteLibros = true;
+                                }
+                            }
                             break;
                         case "1":
-                            Sistema.revistas[Sistema.contadorRevistas] = new Revista(ejemplar[2], ejemplar[3],(Sistema.contadorRevistas-Sistema.contadorRevistasEliminadas), "REV-"+(Sistema.contadorRevistas+1), ejemplar[1], ejemplar[4], 0);
-                            Sistema.contadorRevistas++;// = Sistema.contadorRevistas++;
+                            if (Sistema.contadorRevistas<=49) {
+                                Sistema.revistas[Sistema.contadorRevistas] = new Revista(ejemplar[2], ejemplar[3],(Sistema.contadorRevistas-Sistema.contadorRevistasEliminadas), "REV-"+(Sistema.contadorRevistas+1), ejemplar[1], ejemplar[4], 0);
+                                Sistema.contadorRevistas++;
+                            }else{
+                                if (limiteRevistas==false) {
+                                    errorLimiteAlmacenamieto(1);
+                                    limiteRevistas = true;
+                                }
+                            }
                             break;
                         case "2":
-                            Sistema.tesis[Sistema.contadorTesis] = new Tesis(ejemplar[2], ejemplar[4], ejemplar[5],(Sistema.contadorTesis-Sistema.contadorTesisEliminadas   ), "TES-"+(Sistema.contadorTesis+1), ejemplar[1], ejemplar[3], 0);
-                            Sistema.contadorTesis++;
+                            if (Sistema.contadorTesis<=49) {
+                                Sistema.tesis[Sistema.contadorTesis] = new Tesis(ejemplar[2], ejemplar[4], ejemplar[5],(Sistema.contadorTesis-Sistema.contadorTesisEliminadas   ), "TES-"+(Sistema.contadorTesis+1), ejemplar[1], ejemplar[3], 0);
+                                Sistema.contadorTesis++;      
+                            } else {
+                                if (limiteTesis==false) {
+                                    errorLimiteAlmacenamieto(2);
+                                    limiteTesis = true;
+                                }
+                            }
                             break;
                         case "3":
-                            Sistema.usuarios[Sistema.contadorUsuarios] = new Usuario(ejemplar[1], ejemplar[4], ejemplar[2], ejemplar[3], 1);
-                            Sistema.contadorUsuarios++;
+                            if (Sistema.contadorUsuarios<=10) {
+                                try {
+                                    for (int j = 0; j < 10; j++) {
+                                        if (Sistema.usuarios[j].getUsuario().equals(ejemplar[1])) {
+                                            nombreDeUsuarioNoDisponible=true;
+                                            break;
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    Sistema.usuarios[Sistema.contadorUsuarios] = new Usuario(Sistema.contadorUsuarios-1,0,0,ejemplar[1], ejemplar[4], ejemplar[2], ejemplar[3], 1);
+                                    Sistema.contadorUsuarios++;
+                                }
+                                
+                            } else {
+                                if (limiteUsuarios==false) {
+                                    errorLimiteAlmacenamieto(3);
+                                    limiteUsuarios = true;
+                                }
+                            }
                             break;
                     }
                     ejemplar = null;
                 }
-                /*Libro[] libs = Sistema.libros;
-                System.out.println(libs[0].getAutor());*/
+                if (limiteLibros==true||limiteRevistas==true||limiteTesis==true||limiteUsuarios==true) {
+                    errorLimiteAlmacenamieto(4);
+                }
+                if(nombreDeUsuarioNoDisponible==true){
+                    errorNombreDeUsuario();
+                }
             } catch (Exception e) {
-                System.out.println("error en ejecucion");
-                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error en el ingreso de datos. Datos almacenados hasta antes del error", "Error", JOptionPane.ERROR_MESSAGE);
             }
             
+        }
+        
+        private void errorLimiteAlmacenamieto(int tipo){
+            switch(tipo){
+                case 0:
+                    mensaje = mensaje.concat(" Libros, ");
+                    break;
+                case 1:
+                    mensaje = mensaje.concat(" Revistas, ");
+                    break;
+                case 2:
+                    mensaje = mensaje.concat(" Tesis, ");
+                    break;
+                case 3:
+                    mensaje = mensaje.concat(" Usuarios, ");
+                    break;
+                case 4:
+                    JOptionPane.showMessageDialog(null, mensaje+" Extras no se Agregan.", "Error", JOptionPane.ERROR_MESSAGE);
+                    limiteLibros=false;
+                    limiteRevistas=false;
+                    limiteTesis=false;
+                    limiteUsuarios=false;
+                    break;
+            }
+        }
+        
+        private void errorNombreDeUsuario(){
+            JOptionPane.showMessageDialog(null, "Nombres de usuario repetidos no disponibles. Solo los validos se registran.", "Error", JOptionPane.ERROR_MESSAGE);
+            nombreDeUsuarioNoDisponible=false;
         }
     }
     
@@ -111,7 +185,6 @@ public class CargaMasiva {
 
         @Override
         public void actionPerformed(ActionEvent ae) {
-            //Sistema.cardLayout.show(Sistema.panel, "contenidoVerMaterial");
             Sistema.consulta.verMateria();
         }  
     }

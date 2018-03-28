@@ -10,12 +10,21 @@ package biblioteca.bean;
  * @author bruno
  */
 public class Ejemplar {
+   private String usuario; 
    private int idTabla;
    private String id;
    private String titulo;
    private String tema;
    private int estado;
 
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
+    }
+    
     public int getIdTabla() {
         return idTabla;
     }

@@ -6,6 +6,8 @@
 package biblioteca.sistema;
 
 import biblioteca.bean.Libro;
+import biblioteca.bean.Revista;
+import biblioteca.bean.Tesis;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -30,21 +32,15 @@ import javax.swing.table.DefaultTableModel;
  */
 public class ConsultaMaterial {
     private String[] headers;
-    private Object[][] dataLibros; 
-    private Object[][] dataRevistas; 
-    private Object[][] dataTesis; 
+    private Object[][] dataLibros,dataRevistas,dataTesis; 
     private JTable contenido = new JTable();
     private JComboBox filtro;
-    private JLabel lblFiltro;
-    private JLabel lblBusqueda;
+    private JLabel lblFiltro,lblBusqueda;
     private JTextField txtBusqueda;
-    private JButton btnBuscar;
-    private JButton cargarContenido;
-    private JButton btnLogIn;
+    private JButton btnBuscar,cargarContenido, administrarUsuarios,btnLogIn,btnEditar,btnVer,btnEliminar,btnPrestar,btnDevolver, btnReportes;
     private DefaultTableModel modelo; 
     private JPanel panelAcciones = new JPanel(new FlowLayout());
     private JPanel panelFunciones = new JPanel(new BorderLayout(15,15));
-    private JButton btnEditar,btnVer,btnEliminar;
     private boolean opcionTablaSeleccionado = false;
     
     private CargaMasiva cargaMasiva = new CargaMasiva();
@@ -74,6 +70,7 @@ public class ConsultaMaterial {
         lblBusqueda = new JLabel("Ingrese el Titulo:  ");
         txtBusqueda = new JTextField(12);
         btnBuscar = new JButton("Buscar");
+        btnBuscar.addActionListener(new BuscarMaterial());
         panelBusqueda.add(lblBusqueda);
         panelBusqueda.add(txtBusqueda);
         panelBusqueda.add(btnBuscar);
@@ -98,16 +95,17 @@ public class ConsultaMaterial {
             if(Sistema.usuarioLogeado.getNivel()==1){
                 
             }else{
-                //btnEditar = new JButton("Editar");
-                //btnEliimirar = new JButton("Eliminar");
-                //acciones.add(btnEditar);
-                //acciones.add(btnEliimirar);
-                
                 cargarContenido = new JButton("Carga Masiva");
+                administrarUsuarios = new JButton("Administrar Usuarios");
+                btnReportes = new JButton("Reportes");
                 
                 cargarContenido.addActionListener(new MostrarCargaMasiva());
+                administrarUsuarios.addActionListener(new MostrarAdministrarUsuarios());
+                btnReportes.addActionListener(new MostrarReportes());
                 
                 panelAcciones.add(cargarContenido);
+                panelAcciones.add(administrarUsuarios);
+                panelAcciones.add(btnReportes);
             }
             btnLogIn = new JButton("Log Out");
             btnLogIn.addActionListener(new CerrarSesion());
@@ -117,15 +115,19 @@ public class ConsultaMaterial {
             btnLogIn.addActionListener(new MostrarLogin());
         }
         
-        
+        btnDevolver = new JButton("Devolver");
+        btnPrestar = new JButton("Prestar");
         btnEliminar = new JButton("Eliminar");
         btnEditar = new JButton("Editar");
         btnVer = new JButton("Ver");     
         
+        /*btnPrestar.setName("Prestar");
         btnEliminar.setName("Eliminar");
         btnEditar.setName("Editar");
-        btnVer.setName("Ver");
+        btnVer.setName("Ver");*/
         
+        btnDevolver.addActionListener(new DevolverEjemplar());
+        btnPrestar.addActionListener(new PrestarEjemplar());
         btnEliminar.addActionListener(new EliminarEjemplar());
         btnEditar.addActionListener(new EditarEjemplar());
         btnVer.addActionListener(new VerEjemplar());
@@ -165,7 +167,6 @@ public class ConsultaMaterial {
                         ((JButton)object).doClick();
                         JButton btn = (JButton) object;
                         opcionTablaSeleccionado = true;
-                        //botonTablaPresionado(btn);
                     }
                 }
             }
@@ -180,84 +181,78 @@ public class ConsultaMaterial {
         panelLibros.add(scroll);
         contenidoVerMaterial.add(panelLibros, BorderLayout.CENTER);
         
-        //contenido material
-        //funcionalidad libros en la tabla
-        
-        /*try {
-            if(Sistema.usuarioLogeado.getNivel()==0){
-                
-                //panelFunciones.add(panelAcciones, BorderLayout.CENTER);
-            }else{
-                //btn prestar
-            }
-            //panelFunciones.add(panelAcciones, BorderLayout.CENTER);
-        } catch (Exception e) {}*/
-        
-        
-        
         Sistema.panel.add(contenidoVerMaterial, "contenidoVerMaterial");
         Sistema.cardLayout.show(Sistema.panel, "contenidoVerMaterial");
         
         Sistema.ventana.add(Sistema.panel);
     }
 
+    private void añadirHeadersLibro(){
+        try {
+            if(Sistema.usuarioLogeado.getNivel()==1){
+                headers = new String[] {"ID", "Titulo", "Autor", "Tipo", "Estado","",""};
+                dataLibros = new Object[50][7];
+            }else{
+                headers = new String[] {"ID", "Titulo", "Autor", "Tipo", "Estado","",""};
+                dataLibros = new Object[50][7];
+            }
+        } catch (Exception e) {
+            headers = new String[] {"ID", "Titulo", "Autor", "Tipo", "Estado",""};
+            dataLibros = new Object[50][6];
+        }
+    }
+    
+    private void añadirHeadersRevista(){
+        try {
+            if(Sistema.usuarioLogeado.getNivel()==1){
+                headers = new String[] {"ID", "Titulo", "Compañia", "Tipo", "Estado","",""};
+                dataRevistas = new Object[50][7];
+            }else{
+                headers = new String[] {"ID", "Titulo", "Compañia", "Tipo", "Estado","",""};
+                dataRevistas = new Object[50][7];
+            }
+        } catch (Exception e) {
+            headers = new String[] {"ID", "Titulo", "Compañia", "Tipo", "Estado",""};
+            dataRevistas = new Object[50][6];
+        }
+    }
+    
+    private void añadirHeadersTesis(){
+        try {
+            if(Sistema.usuarioLogeado.getNivel()==1){
+                headers = new String[] {"ID", "Titulo", "Autor", "Tipo", "Estado","",""};
+                dataTesis = new Object[50][7];
+            }else{
+                headers = new String[] {"ID", "Titulo", "Autor", "Tipo", "Estado","",""};
+                dataTesis = new Object[50][7];
+            }
+        } catch (Exception e) {
+            headers = new String[] {"ID", "Titulo", "Autor", "Tipo", "Estado",""};
+            dataTesis = new Object[50][6];
+        }
+    }
+    
     private void organizarMaterial(String materia) {
         try {
             switch(materia){
                 case "Libros":
-                    try {
-                        if(Sistema.usuarioLogeado.getNivel()==1){
-                            headers = new String[] {"ID", "Titulo", "Autor", "Tipo", "Estado",""};
-                            dataLibros = new Object[50][6];
-                        }else{
-                            headers = new String[] {"ID", "Titulo", "Autor", "Tipo", "Estado","",""};
-                            dataLibros = new Object[50][7];
-                        }
-                    } catch (Exception e) {
-                        headers = new String[] {"ID", "Titulo", "Autor", "Tipo", "Estado",""};
-                        dataLibros = new Object[50][6];
-                    }
-                    
+                    añadirHeadersLibro();
                     if (Sistema.contadorLibros>0) {
-                        añadirLibros();
+                        añadirLibros(Sistema.libros);
                     }
-                    
                     modelo.setDataVector(dataLibros, headers);
                     break;
                 case "Revistas":
-                    try {
-                        if(Sistema.usuarioLogeado.getNivel()==1){
-                            headers = new String[] {"ID", "Titulo", "Compañia", "Tipo", "Estado",""};
-                            dataRevistas = new Object[50][6];
-                        }else{
-                            headers = new String[] {"ID", "Titulo", "Compañia", "Tipo", "Estado","",""};
-                            dataRevistas = new Object[50][7];
-                        }
-                    } catch (Exception e) {
-                        headers = new String[] {"ID", "Titulo", "Compañia", "Tipo", "Estado",""};
-                        dataRevistas = new Object[50][6];
-                    }
-                    
+                    añadirHeadersRevista();
                     if(Sistema.contadorRevistas>0){
-                        añadirRevistas();
+                        añadirRevistas(Sistema.revistas);
                     }
                     modelo.setDataVector(dataRevistas, headers);
                     break;
                 case "Tesis":
-                    try {
-                        if(Sistema.usuarioLogeado.getNivel()==1){
-                            headers = new String[] {"ID", "Titulo", "Autor", "Tipo", "Estado",""};
-                            dataTesis = new Object[50][6];
-                        }else{
-                            headers = new String[] {"ID", "Titulo", "Autor", "Tipo", "Estado","",""};
-                            dataTesis = new Object[50][7];
-                        }
-                    } catch (Exception e) {
-                        headers = new String[] {"ID", "Titulo", "Autor", "Tipo", "Estado",""};
-                        dataTesis = new Object[50][6];
-                    }
+                    añadirHeadersTesis();
                     if(Sistema.contadorTesis>0){
-                        añadirTesis();
+                        añadirTesis(Sistema.tesis);
                     }
                     modelo.setDataVector(dataTesis, headers);
                     break;
@@ -273,70 +268,111 @@ public class ConsultaMaterial {
     //0 = disponble
     //1 = ocupado
     //2 = eliminado
-    private void añadirLibros(){
-        for (int i = 0; i < Sistema.contadorLibros; i++) {
-            if (Sistema.libros[i].getEstado()!=2) {
-                dataLibros[Sistema.libros[i].getIdTabla()][0] = Sistema.libros[i].getId();
-                dataLibros[Sistema.libros[i].getIdTabla()][1] = Sistema.libros[i].getTitulo();
-                dataLibros[Sistema.libros[i].getIdTabla()][2] = Sistema.libros[i].getAutor();
-                dataLibros[Sistema.libros[i].getIdTabla()][3] = Sistema.libros[i].getTema();
-                dataLibros[Sistema.libros[i].getIdTabla()][4] = (Sistema.libros[i].getEstado()==0)?"Disponible":"Ocupado";
-                try {
-                    if(Sistema.usuarioLogeado.getNivel()==1){
-                        dataLibros[Sistema.libros[i].getIdTabla()][5] = btnVer;
-                    }else{
-                        dataLibros[Sistema.libros[i].getIdTabla()][5] = btnEditar;
-                        dataLibros[Sistema.libros[i].getIdTabla()][6] = btnEliminar;
+    private void añadirLibros(Libro[] libros){
+        try {
+            for (int i = 0; i < libros.length; i++) {
+                if (libros[i].getEstado()!=2) {
+                    dataLibros[libros[i].getIdTabla()][0] = libros[i].getId();
+                    dataLibros[libros[i].getIdTabla()][1] = libros[i].getTitulo();
+                    dataLibros[libros[i].getIdTabla()][2] = libros[i].getAutor();
+                    dataLibros[libros[i].getIdTabla()][3] = libros[i].getTema();
+                    dataLibros[libros[i].getIdTabla()][4] = (libros[i].getEstado()==0)?"Disponible":"Ocupado";
+                    try {
+                        if(Sistema.usuarioLogeado.getNivel()==1){
+                            dataLibros[libros[i].getIdTabla()][5] = btnVer;
+                            try {
+                                if (libros[i].getEstado()==1) {
+                                    if (libros[i].getUsuario().equals(Sistema.usuarioLogeado.getUsuario())){
+                                        dataLibros[libros[i].getIdTabla()][6] = btnDevolver;
+                                    }
+                                }else{
+                                    dataLibros[libros[i].getIdTabla()][6] = btnPrestar;
+                                }
+                            } catch (Exception e) {
+                                dataLibros[libros[i].getIdTabla()][6] = btnPrestar;
+                            }
+                        }else{
+                            dataLibros[libros[i].getIdTabla()][5] = btnEditar;
+                            dataLibros[libros[i].getIdTabla()][6] = btnEliminar;
+                        }
+                    } catch (Exception e) {
+                        dataLibros[libros[i].getIdTabla()][5] = btnVer;
                     }
-                } catch (Exception e) {
-                    dataLibros[Sistema.libros[i].getIdTabla()][5] = btnVer;
                 }
             }
-        }
+        } catch (Exception e) {}
+    }
+
+    
+    private void añadirRevistas(Revista[] revistas){
+        try {
+            for (int i = 0; i < revistas.length; i++) {
+                if (revistas[i].getEstado()!=2) {
+                     dataRevistas[revistas[i].getIdTabla()][0] = revistas[i].getId();
+                    dataRevistas[revistas[i].getIdTabla()][1] = revistas[i].getTitulo();
+                    dataRevistas[revistas[i].getIdTabla()][2] = revistas[i].getCompañia();
+                    dataRevistas[revistas[i].getIdTabla()][3] = revistas[i].getTema();
+                    dataRevistas[revistas[i].getIdTabla()][4] = (revistas[i].getEstado()==0)?"Disponible":"Ocupado";
+                    try {
+                        if(Sistema.usuarioLogeado.getNivel()==1){
+                            dataRevistas[revistas[i].getIdTabla()][5] = btnVer;
+                            dataRevistas[revistas[i].getIdTabla()][6] = btnPrestar;
+                            try {
+                                if (revistas[i].getEstado()==1) {
+                                    if (revistas[i].getUsuario().equals(Sistema.usuarioLogeado.getUsuario())) {
+                                        dataRevistas[revistas[i].getIdTabla()][6] = btnDevolver;
+                                    }
+                                }else{
+                                    dataRevistas[revistas[i].getIdTabla()][6] = btnPrestar;
+                                }   
+                            } catch (Exception e) {
+                                dataRevistas[revistas[i].getIdTabla()][6] = btnPrestar;
+                            }
+
+                        }else{
+                            dataRevistas[revistas[i].getIdTabla()][5] = btnEditar;
+                            dataRevistas[revistas[i].getIdTabla()][6] = btnEliminar;
+                        }
+                    } catch (Exception e) {
+                        dataRevistas[revistas[i].getIdTabla()][5] = btnVer;
+                    }
+                }
+            }
+        } catch (Exception e) {}
     }
     
-    private void añadirRevistas(){
-        for (int i = 0; i < Sistema.contadorRevistas; i++) {
-            if (Sistema.revistas[i].getEstado()!=2) {
-                 dataRevistas[Sistema.revistas[i].getIdTabla()][0] = Sistema.revistas[i].getId();
-                dataRevistas[Sistema.revistas[i].getIdTabla()][1] = Sistema.revistas[i].getTitulo();
-                dataRevistas[Sistema.revistas[i].getIdTabla()][2] = Sistema.revistas[i].getCompañia();
-                dataRevistas[Sistema.revistas[i].getIdTabla()][3] = Sistema.revistas[i].getTema();
-                dataRevistas[Sistema.revistas[i].getIdTabla()][4] = (Sistema.revistas[i].getEstado()==0)?"Disponible":"Ocupado";
-                try {
-                    if(Sistema.usuarioLogeado.getNivel()==1){
-                        dataRevistas[Sistema.revistas[i].getIdTabla()][5] = btnVer;
-                    }else{
-                        dataRevistas[Sistema.revistas[i].getIdTabla()][5] = btnEditar;
-                        dataRevistas[Sistema.revistas[i].getIdTabla()][6] = btnEliminar;
+    private void añadirTesis(Tesis[] tesis){
+        try {
+            for (int i = 0; i < tesis.length; i++) {
+                if (tesis[i].getEstado()!=2) {
+                    dataTesis[tesis[i].getIdTabla()][0] = tesis[i].getId();
+                    dataTesis[tesis[i].getIdTabla()][1] = tesis[i].getTitulo();
+                    dataTesis[tesis[i].getIdTabla()][2] = tesis[i].getAutor();
+                    dataTesis[tesis[i].getIdTabla()][3] = tesis[i].getTema();
+                    dataTesis[tesis[i].getIdTabla()][4] = (tesis[i].getEstado()==0)?"Disponible":"Ocupado";
+                     try {
+                        if(Sistema.usuarioLogeado.getNivel()==1){
+                            dataTesis[tesis[i].getIdTabla()][5] = btnVer;
+                            dataTesis[tesis[i].getIdTabla()][6] = btnPrestar;
+                            try {
+                                if (tesis[i].getUsuario().equals(Sistema.usuarioLogeado.getUsuario()) && tesis[i].getEstado()==1) {
+                                    dataTesis[tesis[i].getIdTabla()][6] = btnDevolver;
+                                }else{
+                                    dataTesis[tesis[i].getIdTabla()][6] = btnPrestar;
+                                }
+                            } catch (Exception e) {
+                                dataTesis[tesis[i].getIdTabla()][6] = btnPrestar;
+                            }
+                        }else{
+                            dataTesis[tesis[i].getIdTabla()][5] = btnEditar;
+                            dataTesis[tesis[i].getIdTabla()][6] = btnEliminar;
+                        }
+                    } catch (Exception e) {
+                        dataTesis[tesis[i].getIdTabla()][5] = btnVer;
                     }
-                } catch (Exception e) {
-                    dataRevistas[Sistema.revistas[i].getIdTabla()][5] = btnVer;
                 }
             }
-        }
-    }
-    
-    private void añadirTesis(){
-        for (int i = 0; i < Sistema.contadorTesis; i++) {
-            if (Sistema.tesis[i].getEstado()!=2) {
-                dataTesis[Sistema.tesis[i].getIdTabla()][0] = Sistema.tesis[i].getId();
-                dataTesis[Sistema.tesis[i].getIdTabla()][1] = Sistema.tesis[i].getTitulo();
-                dataTesis[Sistema.tesis[i].getIdTabla()][2] = Sistema.tesis[i].getAutor();
-                dataTesis[Sistema.tesis[i].getIdTabla()][3] = Sistema.tesis[i].getTema();
-                dataTesis[Sistema.tesis[i].getIdTabla()][4] = (Sistema.tesis[i].getEstado()==0)?"Disponible":"Ocupado";
-                 try {
-                    if(Sistema.usuarioLogeado.getNivel()==1){
-                        dataTesis[Sistema.tesis[i].getIdTabla()][5] = btnVer;
-                    }else{
-                        dataTesis[Sistema.tesis[i].getIdTabla()][5] = btnEditar;
-                        dataTesis[Sistema.tesis[i].getIdTabla()][6] = btnEliminar;
-                    }
-                } catch (Exception e) {
-                    dataTesis[Sistema.tesis[i].getIdTabla()][5] = btnVer;
-                }
-            }
-        }
+        } catch (Exception e) {}
     }
     
     private class MostrarCargaMasiva implements ActionListener{
@@ -475,7 +511,6 @@ public class ConsultaMaterial {
                 JButton btn = (JButton)o;
                 return btn;
             }
-            
             return super.getTableCellRendererComponent(table, o, isSelected, hasFocus, row, column); 
         }
     }
@@ -510,8 +545,8 @@ public class ConsultaMaterial {
                             if (eliminado) {
                                 if (index==Sistema.revistas[i].getIdTabla()) {
                                     eliminado=false;
-                                    Sistema.revistas[index].setEstado(2);
-                                    Sistema.revistas[index].setIdTabla(-1);
+                                    Sistema.revistas[i].setEstado(2);
+                                    Sistema.revistas[i].setIdTabla(-1);
                                     try {
                                         for (int j = 0; j < Sistema.revistas.length ; j++) {
                                             if (j>index ) {
@@ -531,8 +566,8 @@ public class ConsultaMaterial {
                             if (eliminado) {
                                 if (index==Sistema.tesis[i].getIdTabla()) {
                                     eliminado=false;
-                                    Sistema.tesis[index].setEstado(2);
-                                    Sistema.tesis[index].setIdTabla(-1);
+                                    Sistema.tesis[i].setEstado(2);
+                                    Sistema.tesis[i].setIdTabla(-1);
                                     try {
                                         for (int j = 0; j < Sistema.tesis.length ; j++) {
                                             if (j>index ) {
@@ -548,5 +583,248 @@ public class ConsultaMaterial {
                     break;
         } 
         organizarMaterial(tipo);
+    }
+    
+    private class MostrarAdministrarUsuarios implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            //mostrarusuarios 
+            Sistema.consultaUsuarios.MostrarAdministrarUsuarios();
+        }
+    }
+    
+    private class PrestarEjemplar implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            try {
+                switch(filtro.getSelectedItem().toString()){
+                    case "Libros":
+                        try {
+                            for (int i = 0; i < Sistema.libros.length; i++) {
+                                if (contenido.getSelectedRow() == Sistema.libros[i].getIdTabla()) {
+                                    //prestar libro
+                                    Libro libroPrestado = new Libro();
+                                    libroPrestado = Sistema.libros[i];
+                                    libroPrestado.setUsuario(Sistema.usuarioLogeado.getUsuario());
+                                    libroPrestado.setEstado(1);
+                                    Sistema.libros[i]=libroPrestado;
+                                }
+                            }
+                        } catch (Exception e) {}
+                        break;
+                    case "Revistas":
+                        try {
+                            for (int i = 0; i < Sistema.revistas.length; i++) {
+                                if (contenido.getSelectedRow() == Sistema.revistas[i].getIdTabla()) {
+                                    //prestar revista
+                                    Revista revistaPrestada = new Revista();
+                                    revistaPrestada = Sistema.revistas[i];
+                                    revistaPrestada.setUsuario(Sistema.usuarioLogeado.getUsuario());
+                                    revistaPrestada.setEstado(1);
+                                    Sistema.revistas[i]=revistaPrestada;
+                                }
+                            }
+                        } catch (Exception e) {}
+                        break;
+                    case "Tesis":
+                        try {
+                            for (int i = 0; i < Sistema.tesis.length; i++) {
+                                if (contenido.getSelectedRow() == Sistema.tesis[i].getIdTabla()) {
+                                    //prestar Tesis
+                                    Tesis tesisPrestada = new Tesis();
+                                    tesisPrestada = Sistema.tesis[i];
+                                    tesisPrestada.setUsuario(Sistema.usuarioLogeado.getUsuario());
+                                    tesisPrestada.setEstado(1);
+                                    Sistema.tesis[i]=tesisPrestada;
+                                }
+                            }
+                        } catch (Exception e) {}
+                        break;
+                }
+                Sistema.usuarioLogeado.setLibrosPrestados(Sistema.usuarioLogeado.getLibrosPrestados()+1);
+                organizarMaterial(filtro.getSelectedItem().toString());
+            } catch (Exception e) {}
+        }
+    }
+     
+    private class DevolverEjemplar implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            try {
+                switch(filtro.getSelectedItem().toString()){
+                    case "Libros":
+                        try {
+                            for (int i = 0; i < Sistema.libros.length; i++) {
+                                if (contenido.getSelectedRow() == Sistema.libros[i].getIdTabla()) {
+                                    //devolver libro
+                                    Libro libroDevuelto = new Libro();
+                                    libroDevuelto = Sistema.libros[i];
+                                    libroDevuelto.setEstado(0);
+                                    libroDevuelto.setUsuario(null);
+                                    Sistema.libros[i]=libroDevuelto;
+                                }
+                            }
+                        } catch (Exception e) {}
+                        break;
+                    case "Revistas":
+                        try {
+                            for (int i = 0; i < Sistema.revistas.length; i++) {
+                                if (contenido.getSelectedRow() == Sistema.revistas[i].getIdTabla()) {
+                                    //devolver revistas
+                                    Revista revistaDevuelta = new Revista();
+                                    revistaDevuelta = Sistema.revistas[i];
+                                    revistaDevuelta.setEstado(0);
+                                    revistaDevuelta.setUsuario(null);
+                                    Sistema.revistas[1]=revistaDevuelta;
+                                }
+                            }   
+                        } catch (Exception e) {}
+                        break;
+                    case "Tesis":
+                        try {
+                            for (int i = 0; i < Sistema.tesis.length; i++) {
+                                if (contenido.getSelectedRow() == Sistema.tesis[i].getIdTabla()) {
+                                    //devolver Tesis
+                                    Tesis tesisDevuelta = new Tesis();
+                                    tesisDevuelta = Sistema.tesis[i];
+                                    tesisDevuelta.setEstado(0);
+                                    tesisDevuelta.setUsuario(null);
+                                    Sistema.tesis[i]=tesisDevuelta;
+                                }
+                            }
+                        } catch (Exception e) {}
+                        break;
+                }
+            } catch (Exception e) {}
+            Sistema.usuarioLogeado.setLibrosPrestados(Sistema.usuarioLogeado.getLibrosPrestados()-1);
+            organizarMaterial(filtro.getSelectedItem().toString());
+        }
+    }
+    
+    private class BuscarMaterial implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            switch(filtro.getSelectedItem().toString()){
+                case "Libros":
+                    try {
+                        if (txtBusqueda.getText().equals("")) {
+                            añadirLibros(Sistema.libros);
+                            break;
+                        }else{
+                            //añadir libros filtrados
+                            Libro[] lb = new Libro[50];
+                            Libro tmp = new Libro();
+
+                            try {
+                                int contador = 0;
+                                for (int j = 0; j < Sistema.libros.length; j++) {
+                                    if (txtBusqueda.getText().toLowerCase().equals(Sistema.libros[j].getTitulo().toLowerCase())) {
+                                        lb[contador] = Sistema.libros[j];
+                                        contador++;
+                                    }
+                                }
+                            } catch (Exception e) {}
+                            try {
+                                for (int j = 0; j < Sistema.libros.length; j++) {
+                                    if (lb[j].getIdTabla()<lb[j+1].getIdTabla()) {
+                                        tmp = lb[j];
+                                        lb[j] = lb[j+1];
+                                        lb[j+1] = tmp;
+                                    }
+                                }
+                            } catch (Exception e) {}
+                            añadirHeadersLibro();
+                            añadirLibros(lb);
+                            modelo.setDataVector(dataLibros, headers);
+                        }
+                    } catch (Exception e) {}
+                    break;
+                case "Revistas":
+                    try {
+                        if (txtBusqueda.getText().equals("")) {
+                            añadirRevistas(Sistema.revistas);
+                            break;
+                        }else{
+                            Revista[] rv = new Revista[50];
+                            Revista tmp = new Revista();
+                            
+                            try {
+                                int contador = 0;
+                                for (int i = 0; i < Sistema.revistas.length; i++) {
+                                    if (txtBusqueda.getText().toLowerCase().equals(Sistema.revistas[i].getTitulo().toLowerCase())) {
+                                        rv[contador] = Sistema.revistas[i];
+                                        contador++;
+                                    }
+                                }
+                            } catch (Exception e) {}
+                            try {
+                                for (int j = 0; j < Sistema.revistas.length; j++) {
+                                    if (rv[j].getIdTabla()<rv[j+1].getIdTabla()) {
+                                        tmp = rv[j];
+                                        rv[j] = rv[j+1];
+                                        rv[j+1] = tmp;
+                                    }
+                                }
+                            } catch (Exception e) {}
+                            añadirHeadersRevista();
+                            añadirRevistas(rv);
+                            modelo.setDataVector(dataRevistas, headers);
+                        }
+                    } catch (Exception e) {}
+                    break;
+                case "Tesis":
+                    try {
+                        if (txtBusqueda.getText().equals("")) {
+                            añadirTesis(Sistema.tesis);
+                            break;
+                        }else{
+                            Tesis[] ts = new Tesis[50];
+                            Tesis tmp = new Tesis();
+                            
+                            try {
+                                int contador = 0;
+                                for (int i = 0; i < Sistema.tesis.length; i++) {
+                                    if (txtBusqueda.getText().toLowerCase().equals(Sistema.tesis[i].getTitulo().toLowerCase())) {
+                                        ts[contador] = Sistema.tesis[i];
+                                    }
+                                }
+                            } catch (Exception e) {}
+                            try {
+                                for (int j = 0; j < Sistema.tesis.length; j++) {
+                                    if (ts[j].getIdTabla()<ts[j+1].getIdTabla()) {
+                                        tmp = ts[j];
+                                        ts[j] = ts[j+1];
+                                        ts[j+1] = tmp;
+                                    }
+                                }
+                            } catch (Exception e) {}
+                            añadirHeadersTesis();
+                            añadirTesis(ts);
+                            modelo.setDataVector(dataTesis, headers);
+                        }
+                    } catch (Exception e) {}
+                    break;
+            }
+            contenido.setModel(modelo);
+            contenido.setDefaultRenderer(Object.class, new TableRender());
+            txtBusqueda.setText("");
+            Sistema.ventana.repaint();
+            /*modelo.setDataVector(dataRevistas, headers);        
+            contenido.setModel(modelo);
+            contenido.setDefaultRenderer(Object.class, new TableRender());*/
+        }
+    }
+    
+    private class MostrarReportes implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            Reportes reportes = new Reportes();
+            reportes.mostrarReportes();
+        }
     }
 }

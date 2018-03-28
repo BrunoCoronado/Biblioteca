@@ -19,7 +19,7 @@ import javax.swing.JPanel;
  * @author bruno
  */
 public class Sistema{
-    public static Usuario[] usuarios = new Usuario[10];
+    public static Usuario[] usuarios = new Usuario[11];
     public static Libro[] libros = new Libro[50];
     public static Revista[] revistas = new Revista[50]; 
     public static Tesis[] tesis = new Tesis[50];
@@ -37,6 +37,7 @@ public class Sistema{
     public static int contadorTesisEliminadas = 0;
     
     public static ConsultaMaterial consulta = new ConsultaMaterial();
+    public static ConsultaUsuarios consultaUsuarios = new ConsultaUsuarios();
     
     public void inicializar() {
         inicializarUsuarios();

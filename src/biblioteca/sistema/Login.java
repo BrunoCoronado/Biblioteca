@@ -5,6 +5,7 @@
  */
 package biblioteca.sistema;
 
+import biblioteca.bean.Libro;
 import biblioteca.bean.Usuario;
 import java.awt.BorderLayout;
 import java.awt.Button;
@@ -142,5 +143,7 @@ public class Login{
         public void actionPerformed(ActionEvent ae) {
             Sistema.consulta.verMateria();
         }
-    }    
+    }
 }
+
+
