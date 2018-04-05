@@ -67,14 +67,13 @@ public class Ejemplar {
 
     public Ejemplar() {
     }
-    
-    public Ejemplar(int idTabla, String id, String titulo, String tema, int estado) {
+   
+    public Ejemplar(String usuario, int idTabla, String id, String titulo, String tema, int estado) {
+        this.usuario = usuario;
         this.idTabla = idTabla;
         this.id = id;
         this.titulo = titulo;
         this.tema = tema;
         this.estado = estado;
-    }
-    
-    
+    } 
 }

@@ -51,6 +51,7 @@ public class VerMaterial {
     }
     
     private void mostrarLibros(int idMaterial){
+        Sistema.libros[idMaterial].setContadorVisto(Sistema.libros[idMaterial].getContadorVisto()+1);
         Libro libro = Sistema.libros[idMaterial];
         
         lblCampo1 = new JLabel("ID: "+ libro.getId());

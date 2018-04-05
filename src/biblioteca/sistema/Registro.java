@@ -147,7 +147,7 @@ public class Registro {
         }
         
         public void agregarUsuarioRegistrado(){
-                Sistema.usuarios[Sistema.contadorUsuarios] = new Usuario(usuario.getText(), String.valueOf(contraseña.getPassword()), nombre.getText(), apellido.getText(), 1);
+                Sistema.usuarios[Sistema.contadorUsuarios] = new Usuario(Sistema.contadorUsuarios-1,usuario.getText(), String.valueOf(contraseña.getPassword()), nombre.getText(), apellido.getText(), 1);
                 Sistema.contadorUsuarios++;// = Sistema.contadorUsuarios + 1;
                 JOptionPane.showMessageDialog(null, "Usuario registrado correctamente.");
                 Sistema.cardLayout.show(Sistema.panel, "contenidoLogin");

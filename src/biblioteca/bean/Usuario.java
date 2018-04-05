@@ -88,6 +88,15 @@ public class Usuario {
     public Usuario() {
     }
 
+    public Usuario(int idTabla,String usuario, String contraseña, String nombre, String apellido, int nivel) {
+        this.usuario = usuario;
+        this.contraseña = contraseña;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.nivel = nivel;
+        this.idTabla = idTabla;
+    }
+    
     public Usuario(String usuario, String contraseña, String nombre, String apellido, int nivel) {
         this.usuario = usuario;
         this.contraseña = contraseña;

@@ -41,8 +41,8 @@ public class Tesis extends Ejemplar{
     public Tesis() {
     }
     
-    public Tesis(String autor, String grado, String año, int idTabla, String id, String titulo, String tema, int estado) {
-        super(idTabla, id, titulo, tema, estado);
+    public Tesis(String usuario, String autor, String grado, String año, int idTabla, String id, String titulo, String tema, int estado) {
+        super(usuario, idTabla, id, titulo, tema, estado);
         this.autor = autor;
         this.grado = grado;
         this.año = año;

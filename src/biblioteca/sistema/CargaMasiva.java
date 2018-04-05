@@ -5,6 +5,7 @@
  */
 package biblioteca.sistema;
 
+import biblioteca.bean.Autor;
 import biblioteca.bean.Libro;
 import biblioteca.bean.Revista;
 import biblioteca.bean.Tesis;
@@ -83,9 +84,19 @@ public class CargaMasiva {
                     switch(ejemplar[0]){
                         case "0":
                             if (Sistema.contadorLibros<=49) {
-                                Sistema.libros[Sistema.contadorLibros] = new Libro(ejemplar[2], Integer.parseInt(ejemplar[4]),(Sistema.contadorLibros-Sistema.contadorLibrosEliminados), "LIB-"+(Sistema.contadorLibros+1), ejemplar[1], ejemplar[3], 0);
+                                Sistema.libros[Sistema.contadorLibros] = new Libro("",0,0,ejemplar[2], Integer.parseInt(ejemplar[4]),(Sistema.contadorLibros-Sistema.contadorLibrosEliminados), "LIB-"+(Sistema.contadorLibros+1), ejemplar[1], ejemplar[3], 0);
                                 Sistema.contadorLibros++;
-                                
+                                try {
+                                    for (int j = 0; j < Sistema.autor.length; j++) {
+                                        if (Sistema.autor[j].getNombre().equals(ejemplar[2])) {
+                                            Sistema.autor[j].setConadorLibros(Sistema.autor[j].getConadorLibros()+1);
+                                            break;
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    Sistema.autor[Sistema.contadorAutor] = new Autor(ejemplar[2],1);
+                                    Sistema.contadorAutor++;
+                                }
                             }else{
                                 if (limiteLibros==false) {
                                     errorLimiteAlmacenamieto(0);
@@ -95,8 +106,19 @@ public class CargaMasiva {
                             break;
                         case "1":
                             if (Sistema.contadorRevistas<=49) {
-                                Sistema.revistas[Sistema.contadorRevistas] = new Revista(ejemplar[2], ejemplar[3],(Sistema.contadorRevistas-Sistema.contadorRevistasEliminadas), "REV-"+(Sistema.contadorRevistas+1), ejemplar[1], ejemplar[4], 0);
+                                Sistema.revistas[Sistema.contadorRevistas] = new Revista("",0,ejemplar[2], ejemplar[3],(Sistema.contadorRevistas-Sistema.contadorRevistasEliminadas), "REV-"+(Sistema.contadorRevistas+1), ejemplar[1], ejemplar[4], 0);
                                 Sistema.contadorRevistas++;
+                                 try {
+                                    for (int j = 0; j < Sistema.autor.length; j++) {
+                                        if (Sistema.autor[j].getNombre().equals(ejemplar[2])) {
+                                            Sistema.autor[j].setConadorLibros(Sistema.autor[j].getConadorLibros()+1);
+                                            break;
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    Sistema.autor[Sistema.contadorAutor] = new Autor(ejemplar[2],1);
+                                    Sistema.contadorAutor++;
+                                }
                             }else{
                                 if (limiteRevistas==false) {
                                     errorLimiteAlmacenamieto(1);
@@ -106,8 +128,19 @@ public class CargaMasiva {
                             break;
                         case "2":
                             if (Sistema.contadorTesis<=49) {
-                                Sistema.tesis[Sistema.contadorTesis] = new Tesis(ejemplar[2], ejemplar[4], ejemplar[5],(Sistema.contadorTesis-Sistema.contadorTesisEliminadas   ), "TES-"+(Sistema.contadorTesis+1), ejemplar[1], ejemplar[3], 0);
-                                Sistema.contadorTesis++;      
+                                Sistema.tesis[Sistema.contadorTesis] = new Tesis("",ejemplar[2], ejemplar[4], ejemplar[5],(Sistema.contadorTesis-Sistema.contadorTesisEliminadas   ), "TES-"+(Sistema.contadorTesis+1), ejemplar[1], ejemplar[3], 0);
+                                Sistema.contadorTesis++;  
+                                 try {
+                                    for (int j = 0; j < Sistema.autor.length; j++) {
+                                        if (Sistema.autor[j].getNombre().equals(ejemplar[2])) {
+                                            Sistema.autor[j].setConadorLibros(Sistema.autor[j].getConadorLibros()+1);
+                                            break;
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    Sistema.autor[Sistema.contadorAutor] = new Autor(ejemplar[2],1);
+                                    Sistema.contadorAutor++;
+                                }
                             } else {
                                 if (limiteTesis==false) {
                                     errorLimiteAlmacenamieto(2);

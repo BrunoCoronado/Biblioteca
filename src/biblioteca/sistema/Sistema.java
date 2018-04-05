@@ -5,6 +5,7 @@
  */
 package biblioteca.sistema;
 
+import biblioteca.bean.Autor;
 import biblioteca.bean.Libro;
 import biblioteca.bean.Revista;
 import biblioteca.bean.Tesis;
@@ -23,6 +24,7 @@ public class Sistema{
     public static Libro[] libros = new Libro[50];
     public static Revista[] revistas = new Revista[50]; 
     public static Tesis[] tesis = new Tesis[50];
+    public static Autor[] autor = new Autor[100];
     public static CardLayout cardLayout = new CardLayout();
     public static JPanel panel = new JPanel(cardLayout);
     public static JFrame ventana = new JFrame();
@@ -35,6 +37,7 @@ public class Sistema{
     public static int contadorRevistasEliminadas = 0;
     public static int contadorTesis = 0;
     public static int contadorTesisEliminadas = 0;
+    public static int contadorAutor = 0;
     
     public static ConsultaMaterial consulta = new ConsultaMaterial();
     public static ConsultaUsuarios consultaUsuarios = new ConsultaUsuarios();

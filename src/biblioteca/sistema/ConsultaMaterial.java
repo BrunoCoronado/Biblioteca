@@ -37,7 +37,7 @@ public class ConsultaMaterial {
     private JComboBox filtro;
     private JLabel lblFiltro,lblBusqueda;
     private JTextField txtBusqueda;
-    private JButton btnBuscar,cargarContenido, administrarUsuarios,btnLogIn,btnEditar,btnVer,btnEliminar,btnPrestar,btnDevolver, btnReportes;
+    private JButton btnBuscar,cargarContenido, administrarUsuarios,btnLogIn,btnEditar,btnVer,btnEliminar,btnPrestar,btnDevolver, btnReportes, btnPrestamos;
     private DefaultTableModel modelo; 
     private JPanel panelAcciones = new JPanel(new FlowLayout());
     private JPanel panelFunciones = new JPanel(new BorderLayout(15,15));
@@ -93,7 +93,9 @@ public class ConsultaMaterial {
             //1= usuario normal
             //0= usuario administrador
             if(Sistema.usuarioLogeado.getNivel()==1){
-                
+                btnPrestamos = new JButton("Mis Prestamos");
+                btnPrestamos.addActionListener(new MostrarPrestamos());
+                panelAcciones.add(btnPrestamos);
             }else{
                 cargarContenido = new JButton("Carga Masiva");
                 administrarUsuarios = new JButton("Administrar Usuarios");
@@ -526,6 +528,7 @@ public class ConsultaMaterial {
                                     eliminado=false;
                                     Sistema.libros[i].setEstado(2);
                                     Sistema.libros[i].setIdTabla(-1);
+                                    
                                     try {
                                         for (int j = 0; j < Sistema.libros.length ; j++) {
                                             if (j>index ) {
@@ -609,6 +612,7 @@ public class ConsultaMaterial {
                                     libroPrestado = Sistema.libros[i];
                                     libroPrestado.setUsuario(Sistema.usuarioLogeado.getUsuario());
                                     libroPrestado.setEstado(1);
+                                    libroPrestado.setContadorPrestado(libroPrestado.getContadorPrestado()+1);
                                     Sistema.libros[i]=libroPrestado;
                                 }
                             }
@@ -623,6 +627,7 @@ public class ConsultaMaterial {
                                     revistaPrestada = Sistema.revistas[i];
                                     revistaPrestada.setUsuario(Sistema.usuarioLogeado.getUsuario());
                                     revistaPrestada.setEstado(1);
+                                    revistaPrestada.setContadorPrestamo(revistaPrestada.getContadorPrestamo()+1);
                                     Sistema.revistas[i]=revistaPrestada;
                                 }
                             }
@@ -663,7 +668,7 @@ public class ConsultaMaterial {
                                     Libro libroDevuelto = new Libro();
                                     libroDevuelto = Sistema.libros[i];
                                     libroDevuelto.setEstado(0);
-                                    libroDevuelto.setUsuario(null);
+                                    libroDevuelto.setUsuario("");
                                     Sistema.libros[i]=libroDevuelto;
                                 }
                             }
@@ -677,7 +682,7 @@ public class ConsultaMaterial {
                                     Revista revistaDevuelta = new Revista();
                                     revistaDevuelta = Sistema.revistas[i];
                                     revistaDevuelta.setEstado(0);
-                                    revistaDevuelta.setUsuario(null);
+                                    revistaDevuelta.setUsuario("");
                                     Sistema.revistas[1]=revistaDevuelta;
                                 }
                             }   
@@ -691,7 +696,7 @@ public class ConsultaMaterial {
                                     Tesis tesisDevuelta = new Tesis();
                                     tesisDevuelta = Sistema.tesis[i];
                                     tesisDevuelta.setEstado(0);
-                                    tesisDevuelta.setUsuario(null);
+                                    tesisDevuelta.setUsuario("");
                                     Sistema.tesis[i]=tesisDevuelta;
                                 }
                             }
@@ -813,9 +818,6 @@ public class ConsultaMaterial {
             contenido.setDefaultRenderer(Object.class, new TableRender());
             txtBusqueda.setText("");
             Sistema.ventana.repaint();
-            /*modelo.setDataVector(dataRevistas, headers);        
-            contenido.setModel(modelo);
-            contenido.setDefaultRenderer(Object.class, new TableRender());*/
         }
     }
     
@@ -825,6 +827,15 @@ public class ConsultaMaterial {
         public void actionPerformed(ActionEvent ae) {
             Reportes reportes = new Reportes();
             reportes.mostrarReportes();
+        }
+    }
+    
+    private class MostrarPrestamos  implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            Prestamos prestamos = new Prestamos();
+            prestamos.mostrarPrestamos();
         }
     }
 }
